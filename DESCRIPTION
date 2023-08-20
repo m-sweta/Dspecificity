@@ -1,0 +1,20 @@
+Package: Dspecificity
+Title: Dspecificity
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Deepthi", "Munagapati", ,"first.last@example.com", role = c("ctb"),
+           ),
+    person("Sweta", "Munagapati", ,"smunagapati@augusta.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5357-7693")))
+Description: Gives a probabilistic estimate of how specific a transcript marker is to an organ/tissue. Requires FPKM or normalized matrix of RNA sequencing data.
+License: use_ccby_license()
+Imports: readxl
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
