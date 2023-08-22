@@ -1,0 +1,138 @@
+---
+title: "tutorial1"
+author: "Sweta Munagapati, Deepthi Munagapati"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tutorial1}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(Dspecificity)
+```
+
+1.  Dspecificity allows for assigning specificity scores to transcripts.
+    This is a relativistic probability. A score of 0.85 does not mean
+    there is an 85% chance the gene is specific to a tissue. 0.85 is
+    simply a numeric score that allows for ranking. So gene A with a
+    score of 0.75 should rank higher than gene B with a score of 0.60.
+    This is helpful when determining which markers a significant during
+    differential gene expression estimates during RNA seq analysis - you
+    can tell which markers are actually specific to the tissue(s) you
+    are studying.
+
+    Currently the code can only test specificity for one tissue at a
+    time. There are other limitations, in file format and more, that
+    should be minded.
+
+    The idea here is that after you get scores for a list of markers,
+    you can sort the markers by their score, with scores closer to 1 at
+    the top. The scores closest to 1 are most indicative of specificity.
+
+2.  Set up
+
+You will need a normalized counts matrix with transcript IDs in the
+leftmost column and sample type across the top (titling the columns).
+This file should be converted to an .xlsx file (or readable by readxl).
+Make a duplicate of this matrix and insert a row so that the second row
+of the matrix, instead of having counts for the first transcript, has
+labels describing the closest approximation of the tissue in the sample
+type directly above. For example, if cell B1 says "fat", then cell B2
+says "adipose.tissue", which is the closest approximation among the 36
+options given here. If you do not want to, or do not see a close enough
+approximation, simply copy the label down. So if cell C1 says "blood",
+then cell C2 should say "blood":
+
+retina heart skeletal.muscle smooth.muscle adrenal.gland
+parathyroid.gland thyroid.gland pituitary.gland lung bone.marrow
+lymphoid.tissue liver gallbladder testis epididymis prostate
+seminal.vesicle adipose.tissue brain choroid.plexus salivary.gland
+esophagus tongue stomach intestine pancreas kidney urinary.bladder
+breast vagina cervix endometrium fallopian.tube ovary placenta skin
+
+2.  Function use
+
+getWeights( counts = "insert file path to the excel sheet you just made,
+the second one", selectTissue = "among the 36 options, choose which
+tissue you are most interested in")
+
+ex. getWeights(counts = "\~/Desktop/file2.xlsx", selectTissue = "brain")
+
+Save the results of the function to a variable, like weights.
+
+weights \<- getWeights(counts = "\~/Desktop/file1.xlsx", selectTissue =
+"brain")
+
+markerScore(counts = "insert file path to the very first excel sheet you
+had", transcript = "insert transcript ID, can be ENSEMBL ID or whichever
+you used here", weightsforTissue = insert what you saved the result of
+getWeights function as)
+
+ex. markerScore(counts = "\~/Desktop/file1.xlsx", gene =
+"ENSG00000127720", weightsforTissue = weights)
+
+If you want to get the scores for multiple transcript IDs at once:
+
+Create a character array of the transcripts, and loop through the
+markerScore function.
+
+Ex.
+
+data \<- read_excel("\~/Desktop/file1.xlsx")
+
+Tarray \<- data\$\$gene[1:length(data\$gene)]
+
+if you don't want to loop through all the transcripts, modify the
+length(data\$gene) parameter to a number of your choice.
+
+Now for the loop:
+
+for(item in Tarray) {
+
+print(paste(item, markerScore(counts = (counts =
+"\~/Desktop/file1.xlsx", gene = item, weightsforTissue = weights)
+
+}
+
+3.  Info about this code
+
+    The scoring data structure in the Dspecificity package was generated
+    by using HPA consensus tissue gene data to conduct a network
+    analysis using the 36 tissues listed above for 20,162 proteins.
+
+    This means the score is not as predictive as a network analysis
+    using transcripts as nodes would be. However, the error due to this
+    is minimized since a majority of the human proteins were used in the
+    analysis.
+
+    Currently, the code is open-source but the data-structure containing
+    the scoring algorithm is the sole intellectual property of Sweta
+    Munagapati. Distribution, publication, or profitization in any way
+    of this data is illegal.
+
+    Disclaimer: This disclaimer comes with the package metadata already,
+    but I have thought to include it here as well.
+
+    All code contained here is provided to you "AS IS" without any
+    warranties of any kind. The implied warranties of non-infringement,
+    merchantability and fitness for a particular purpose are expressly
+    disclaimed.
+
+    Anything that happens as a result of downloading, reading, or using
+    this code on its own or as a part of any other process or project is
+    not the responsibility, legal or otherwise, of Sweta Munagapati. No
+    liability is assumed for any errors or omissions included here or
+    elsewhere in Dspecificity package.
+
+# 
